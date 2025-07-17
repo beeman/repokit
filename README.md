@@ -6,13 +6,13 @@ Work in progress.
 
 ```shell
 # npm
-npx repokit@latest
+npx @beeman/repokit@latest
 
 # pnpm
-pnpm dlx repokit@latest
+pnpx @beeman/repokit@latest
 
 # bun
-bunx repokit@latest
+bunx @beeman/repokit@latest
 
 # yarn won't be supported. Use pnpm or bun instead if you don't like npm.
 ```
@@ -22,14 +22,6 @@ bunx repokit@latest
 
 ## Local development
 
-> [!TIP] This project uses [pnpm](https://pnpm.io/) as the package manager. If you don't have it, you can install it
-> using `corepack`:
->
-> ```sh
-> corepack enable
-> corepack prepare pnpm@10 --activate
-> ```
-
 To install the project locally, run the following commands:
 
 ```shell
@@ -37,4 +29,5 @@ git clone https://github.com/beeman/repokit.git
 cd repokit
 pnpm install
 pnpm build
+node dist/bin/index.cjs
 ```
