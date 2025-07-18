@@ -19,7 +19,7 @@ export function getRepoTemplateGroups(cwd: string): RepoTemplateGroup[] {
   return items.map((group) => {
     return {
       ...group,
-      templates: getRepoTemplates({ cwd: `${cwd}/${group.path}`, repo: `gh:${packageJson.repository.name}` }),
+      templates: getRepoTemplates({ cwd, group: group.path, repo: `gh:${packageJson.repository.name}` }),
     }
   })
 }
