@@ -3,10 +3,10 @@ import { runCommandInstall } from '../utils/run-command-install'
 
 export function getCommandInstall() {
   return new Command('install')
+    .description('Run install command in a template repo')
     .alias('i')
-    .description('Run install command in a template repository')
-    .option('-c, --cwd <path>', 'Current working directory', '.')
-    .option('-d, --dry-run', 'Dry run, do not execute commands')
+    .option('-r, --repo <repo>', 'Path to the repokit repo', '.')
+    .option('-d, --dry-run', 'Perform a dry run without making any changes.')
     .option('-v, --verbose', 'Show verbose output')
     .action((options) => runCommandInstall(options))
 }

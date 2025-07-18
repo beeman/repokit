@@ -1,23 +1,25 @@
 import { z } from 'zod'
 
-export const packageJsonTemplateSchema = z.object({
-  name: z.string(),
+const templateScriptSchema = z
+  .object({
+    build: z.string(),
+    ci: z.string(),
+    dev: z.string().optional(),
+    start: z.string().optional(),
+  })
+  .refine((scripts) => scripts.dev || scripts.start, {
+    message: "The scripts object must contain 'build', 'ci', and at least one of 'dev' or 'start'",
+  })
+
+const templateSchema = z.object({
   description: z.string(),
   keywords: z.array(z.string()),
-  scripts: z
-    .object({
-      build: z.string(),
-      ci: z.string(),
-      dev: z.string().optional(),
-      start: z.string().optional(),
-    })
-    .refine((scripts) => scripts.dev || scripts.start, {
-      message: "The scripts object must contain 'build', 'ci', and at least one of 'dev' or 'start'",
-    }),
+  name: z.string(),
+  scripts: templateScriptSchema,
 })
 
 export function parsePackageJsonTemplate(content: string) {
-  return packageJsonTemplateSchema.safeParse(JSON.parse(content))
+  return templateSchema.safeParse(JSON.parse(content))
 }
 
-export type PackageJsonTemplate = z.infer<typeof packageJsonTemplateSchema>
+export type PackageJsonTemplate = z.infer<typeof templateSchema>

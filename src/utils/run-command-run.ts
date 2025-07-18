@@ -2,42 +2,58 @@ import { dirname, resolve } from 'node:path'
 import { log } from '@clack/prompts'
 import { getPackageJsonPaths } from './get-package-json-paths'
 import { readFile } from 'node:fs/promises'
-import { execSync } from 'node:child_process'
+import { execCommand } from './exec-command'
+import { ensurePackageJsonRepo } from './ensure-package-json-repo'
 
-export async function runCommandRun(command: string, options: { cwd: string; dryRun: boolean; verbose: boolean }) {
-  {
-    const cwd = resolve(options.cwd)
-    if (options.verbose) {
-      log.info(`Searching for package.json files in ${cwd}`)
-    }
+export interface RunCommandRunOptions {
+  dryRun: boolean
+  repo: string
+  verbose: boolean
+}
 
-    const packageJsonFiles = await getPackageJsonPaths(cwd)
+/**
+ * Runs a command in all subdirectories with a package.json file.
+ * TODO: This should be smarter and use the repokit.groups from the package.json file to find groups and templates.
+ *
+ * @param command
+ * @param repo
+ * @param dryRun
+ * @param verbose
+ */
+export async function runCommandRun(command: string, { repo, dryRun, verbose }: RunCommandRunOptions) {
+  const path = resolve(repo)
+  ensurePackageJsonRepo(path)
 
-    if (options.verbose) {
-      log.info(`Found ${packageJsonFiles.length} package.json files.`)
-    }
+  if (verbose) {
+    log.info(`Searching for package.json files in ${path}`)
+  }
 
-    for (const file of packageJsonFiles) {
-      const dir = dirname(resolve(cwd, file))
-      const cmd = `pnpm run ${command}`
+  const packageJsonFiles = await getPackageJsonPaths(path)
 
-      try {
-        // Read the package.json file and see if it has a "scripts" object with the specified command
-        const packageJson = JSON.parse(await readFile(resolve(dir, 'package.json'), 'utf8'))
-        if (!packageJson.scripts || !packageJson.scripts[command]) {
-          log.error(`Command "${command}" not found in package.json file in ${dir}`)
-          continue
-        }
-        if (!options.dryRun) {
-          log.info(`Running "${cmd}" in ${dir}`)
-          execSync(cmd, { cwd: dir, stdio: options.verbose ? 'inherit' : 'ignore' })
-        }
-      } catch {
-        log.error(`Failed to run command "${cmd}" in ${dir}`)
+  if (verbose) {
+    log.info(`Found ${packageJsonFiles.length} package.json files.`)
+  }
+
+  for (const file of packageJsonFiles) {
+    const dir = dirname(resolve(path, file))
+    const cmd = `pnpm run ${command}`
+
+    try {
+      // Read the package.json file and see if it has a "scripts" object with the specified command
+      const packageJson = JSON.parse(await readFile(resolve(dir, 'package.json'), 'utf8'))
+      if (!packageJson.scripts || !packageJson.scripts[command]) {
+        log.error(`Command "${command}" not found in package.json file in ${dir}`)
+        continue
       }
+      if (!dryRun) {
+        log.info(`Running "${cmd}" in ${dir}`)
+        execCommand({ command: cmd, path: dir, verbose })
+      }
+    } catch {
+      log.error(`Failed to run command "${cmd}" in ${dir}`)
     }
-    if (options.dryRun) {
-      log.warn('This was a dry run. No commands were executed.')
-    }
+  }
+  if (dryRun) {
+    log.warn('This was a dry run. No commands were executed.')
   }
 }

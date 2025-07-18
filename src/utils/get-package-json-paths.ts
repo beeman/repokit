@@ -1,5 +1,11 @@
 import { glob } from 'glob'
 
+/**
+ * Gets the paths to the package.json files in the given cwd.
+ *
+ * @param cwd - The path to get the package.json files in.
+ * @returns The paths to the package.json files in the given cwd.
+ */
 export async function getPackageJsonPaths(cwd: string): Promise<string[]> {
   return await glob('**/package.json', {
     cwd,

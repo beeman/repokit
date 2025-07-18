@@ -1,5 +1,5 @@
-import { readPackageJsonTemplate } from './read-package-json-template'
-import { getDirectories } from './get-directories'
+import { ensurePackageJsonTemplate } from './ensure-package-json-template'
+import { getDirs } from './get-dirs'
 import { join } from 'node:path'
 
 export interface RepoTemplate {
@@ -10,18 +10,34 @@ export interface RepoTemplate {
   id: string
 }
 
-export function getRepoTemplates({ cwd, group, repo }: { cwd: string; group: string; repo: string }): RepoTemplate[] {
-  return getDirectories(join(cwd, group)).map((templatePath) => {
-    const { description, keywords, name } = readPackageJsonTemplate(templatePath)
+/**
+ * Gets the repo templates for the given repokit repo.
+ *
+ * @param path - The path to the repokit repo.
+ * @param group - The group to get the templates from.
+ * @param prefix - The prefix for the template id.
+ * @returns The repo templates.
+ */
+export function getRepoTemplates({
+  path,
+  group,
+  prefix,
+}: {
+  path: string
+  group: string
+  prefix: string
+}): RepoTemplate[] {
+  return getDirs(join(path, group)).map((directory) => {
+    const { description, keywords, name } = ensurePackageJsonTemplate(directory)
 
-    const path = templatePath.replace(`${cwd}/`, '')
+    const templatePath = directory.replace(`${path}/`, '')
 
     return {
       description,
-      id: `${repo}/${path}`,
+      id: `${prefix}/${templatePath}`,
       keywords,
       name,
-      path,
+      path: templatePath,
     }
   })
 }

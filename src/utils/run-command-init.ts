@@ -2,61 +2,58 @@ import { join, resolve } from 'node:path'
 import { log } from '@clack/prompts'
 import { ensureValidDirectoryName } from './ensure-valid-directory-name'
 import { exists } from './exists'
-import { execSync } from 'node:child_process'
+import { installRepokit } from './install-repokit'
+import { execCommand } from './exec-command'
 
+export interface RunCommandInitOptions {
+  cwd: string
+  dryRun: boolean
+  generator: string
+  template: string
+  tag: string
+  update: boolean
+  verbose: boolean
+}
+
+/**
+ * Initializes a new repokit repo in the given working directory.
+ *
+ * @param name - The name of the repokit repo.
+ * @param options - The options for the command.
+ */
 export async function runCommandInit(
   name: string,
-  options: {
-    cwd: string
-    dryRun: boolean
-    package: string
-    template: string
-    tag: string
-    update: boolean
-    verbose: boolean
-  },
+  { cwd, dryRun, tag, verbose, update, generator, template }: RunCommandInitOptions,
 ) {
-  {
-    ensureValidDirectoryName(name)
-    const verbose = options.verbose ?? false
-    const cwd = resolve(options.cwd)
-    const target = join(cwd, name)
+  ensureValidDirectoryName(name)
+  const path = resolve(cwd)
+  const target = join(path, name)
 
-    if (await exists(target)) {
-      throw new Error(`Target directory already exists: ${target}`)
-    }
+  if (await exists(target)) {
+    throw new Error(`Target directory already exists: ${target}`)
+  }
 
-    log.info(`Creating a new template repository in ${target}`)
+  log.info(`Creating a new template repository in ${target}`)
 
-    const command = getCommand({ name, package: options.package, template: options.template })
-    try {
-      if (options.dryRun) {
-        log.warn(`Dry run, skipping ${command} in ${cwd}`)
-      } else {
-        if (verbose) {
-          log.info(`Running command: ${command}`)
-        }
-        execSync(command, { cwd, stdio: verbose ? 'inherit' : 'ignore' })
-        if (options.update) {
-          installRepokit({ cwd: target, tag: options.tag, verbose })
-        }
+  const command = getGeneratorCommand({ name, generator, template })
+  try {
+    if (dryRun) {
+      log.warn(`Dry run, skipping ${command} in ${path}`)
+    } else {
+      if (verbose) {
+        log.info(`Running command: ${command}`)
       }
-    } catch {
-      log.error(`Failed to run command: ${command}`)
-      process.exit(1)
+      execCommand({ command, path: path, verbose })
+      if (update) {
+        installRepokit({ path: target, tag, verbose })
+      }
     }
+  } catch {
+    log.error(`Failed to run command: ${command}`)
+    process.exit(1)
   }
 }
 
-function getCommand({ name, package: pkg, template }: { name: string; package: string; template: string }) {
-  return `pnpx ${pkg} -t ${template} ${name}`
-}
-
-function installRepokit({ cwd, tag, verbose }: { cwd: string; tag: string; verbose: boolean }) {
-  const pkg = `@beeman/repokit@${tag}`
-  log.info(`Installing ${pkg}`)
-  execSync(`pnpm add -D -w ${pkg}`, { cwd, stdio: verbose ? 'inherit' : 'ignore' })
-  // Commit the changes
-  execSync(`git add .`, { cwd, stdio: verbose ? 'inherit' : 'ignore' })
-  execSync(`git commit -m "chore: update ${pkg}"`, { cwd, stdio: verbose ? 'inherit' : 'ignore' })
+function getGeneratorCommand({ name, generator, template }: { name: string; generator: string; template: string }) {
+  return `pnpx ${generator} -t ${template} ${name}`
 }
