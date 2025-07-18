@@ -2,7 +2,7 @@ import { resolve } from 'node:path'
 import { log } from '@clack/prompts'
 import { getPackageJsonPaths } from './get-package-json-paths'
 import { readFile } from 'node:fs/promises'
-import { parseTemplatePackageJson } from './parse-template-package-json'
+import { parsePackageJsonTemplate } from './parse-package-json-template'
 
 export async function runCommandLint(options: { cwd: string; verbose: boolean }) {
   {
@@ -20,7 +20,7 @@ export async function runCommandLint(options: { cwd: string; verbose: boolean })
     for (const file of packageJsonFiles) {
       const filePath = resolve(cwd, file)
       const content = await readFile(filePath, 'utf8')
-      const result = parseTemplatePackageJson(content)
+      const result = parsePackageJsonTemplate(content)
 
       if (!result.success) {
         errorCount++

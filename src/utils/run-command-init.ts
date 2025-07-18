@@ -38,8 +38,7 @@ export async function runCommandInit(
         execSync(command, { cwd, stdio: verbose ? 'inherit' : 'ignore' })
         installRepokit({ cwd: target, tag: options.tag, verbose })
       }
-    } catch (error) {
-      console.error(error)
+    } catch {
       log.error(`Failed to run command: ${command}`)
       process.exit(1)
     }

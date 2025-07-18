@@ -16,6 +16,8 @@ export const packageJsonTemplateSchema = z.object({
     }),
 })
 
-export function parseTemplatePackageJson(content: string) {
+export function parsePackageJsonTemplate(content: string) {
   return packageJsonTemplateSchema.safeParse(JSON.parse(content))
 }
+
+export type PackageJsonTemplate = z.infer<typeof packageJsonTemplateSchema>
