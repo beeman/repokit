@@ -2,7 +2,7 @@ import { cancel, intro, outro } from '@clack/prompts'
 import * as process from 'node:process'
 import { getAppInfo } from './utils/get-app-info'
 import { program } from 'commander'
-import { getCommandClean, getCommandInstall, getCommandLint, getCommandRun } from './commands'
+import { getCommandClean, getCommandInit, getCommandInstall, getCommandLint, getCommandRun } from './commands'
 
 export async function main(argv: string[]) {
   // Get app info from package.json
@@ -16,6 +16,7 @@ export async function main(argv: string[]) {
       .name(app.name)
       .version(app.version, '-V, --version', 'Output the version number')
       .addCommand(getCommandClean())
+      .addCommand(getCommandInit())
       .addCommand(getCommandInstall())
       .addCommand(getCommandLint())
       .addCommand(getCommandRun())
