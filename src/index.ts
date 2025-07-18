@@ -1,7 +1,8 @@
 import { cancel, intro, outro } from '@clack/prompts'
 import * as process from 'node:process'
 import { getAppInfo } from './utils/get-app-info'
-import { getArgs } from './utils/get-args'
+import { program } from 'commander'
+import { getCommandClean, getCommandInstall } from './commands'
 
 export async function main(argv: string[]) {
   // Get app info from package.json
@@ -10,8 +11,14 @@ export async function main(argv: string[]) {
   try {
     // Display the intro
     intro(`${app.name} ${app.version}`)
-    // Get the result from the command line and prompts
-    await getArgs(argv, app)
+    // Run the command
+    await program
+      .name(app.name)
+      .version(app.version, '-V, --version', 'Output the version number')
+      .addCommand(getCommandClean())
+      .addCommand(getCommandInstall())
+      .helpOption('-h, --help', 'Display help for command')
+      .parseAsync(argv)
     outro('Done!')
   } catch (error) {
     cancel(`${error}`)
