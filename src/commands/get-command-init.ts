@@ -11,5 +11,6 @@ export function getCommandInit() {
     .option('-p, --package', 'Npm package used to create the template repository', 'create-solana-dapp@latest')
     .option('-t, --template <template>', 'Template to use', 'gh:beeman/repokit-templates')
     .option('-v, --verbose', 'Show verbose output')
+    .option('-u, --update', 'Update @beeman/repokit in the template repository')
     .action(async (name, options) => await runCommandInit(name, options))
 }

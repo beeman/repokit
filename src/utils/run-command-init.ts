@@ -12,6 +12,7 @@ export async function runCommandInit(
     package: string
     template: string
     tag: string
+    update: boolean
     verbose: boolean
   },
 ) {
@@ -36,7 +37,9 @@ export async function runCommandInit(
           log.info(`Running command: ${command}`)
         }
         execSync(command, { cwd, stdio: verbose ? 'inherit' : 'ignore' })
-        installRepokit({ cwd: target, tag: options.tag, verbose })
+        if (options.update) {
+          installRepokit({ cwd: target, tag: options.tag, verbose })
+        }
       }
     } catch {
       log.error(`Failed to run command: ${command}`)
@@ -52,7 +55,7 @@ function getCommand({ name, package: pkg, template }: { name: string; package: s
 function installRepokit({ cwd, tag, verbose }: { cwd: string; tag: string; verbose: boolean }) {
   const pkg = `@beeman/repokit@${tag}`
   log.info(`Installing ${pkg}`)
-  execSync(`pnpm add -D ${pkg}`, { cwd, stdio: verbose ? 'inherit' : 'ignore' })
+  execSync(`pnpm add -D -w ${pkg}`, { cwd, stdio: verbose ? 'inherit' : 'ignore' })
   // Commit the changes
   execSync(`git add .`, { cwd, stdio: verbose ? 'inherit' : 'ignore' })
   execSync(`git commit -m "chore: update ${pkg}"`, { cwd, stdio: verbose ? 'inherit' : 'ignore' })
