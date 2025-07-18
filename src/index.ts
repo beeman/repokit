@@ -1,4 +1,4 @@
-import { cancel, log, note, outro } from '@clack/prompts'
+import { cancel, intro, outro } from '@clack/prompts'
 import * as process from 'node:process'
 import { getAppInfo } from './utils/get-app-info'
 import { getArgs } from './utils/get-args'
@@ -8,20 +8,10 @@ export async function main(argv: string[]) {
   const app = getAppInfo()
 
   try {
+    // Display the intro
+    intro(`${app.name} ${app.version}`)
     // Get the result from the command line and prompts
-    const args = await getArgs(argv, app)
-
-    if (args.dryRun) {
-      note(JSON.stringify(args, undefined, 2), 'Arguments')
-      outro('🚀 Dry run was used, no changes were made')
-      return
-    }
-
-    if (args.verbose) {
-      log.warn(`Verbose output enabled`)
-      console.warn(args)
-    }
-
+    await getArgs(argv, app)
     outro('Done!')
   } catch (error) {
     cancel(`${error}`)
