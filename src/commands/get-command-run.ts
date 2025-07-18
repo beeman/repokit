@@ -1,9 +1,9 @@
 import { Command } from 'commander'
 import { log } from '@clack/prompts'
-import { glob } from 'glob'
 import { dirname, resolve } from 'node:path'
 import { execSync } from 'node:child_process'
 import { readFile } from 'node:fs/promises'
+import { getPackageJsonPaths } from '../utils/get-package-json-paths'
 
 export function getCommandRun() {
   return new Command('run')
@@ -19,14 +19,7 @@ export function getCommandRun() {
         log.info(`Searching for package.json files in ${cwd}`)
       }
 
-      const packageJsonFiles = await glob('**/package.json', {
-        cwd,
-        dot: true,
-        ignore: '**/{node_modules,tmp}/**',
-      }).then((res) => {
-        // Filter out the top-level package.json file if found in a list of results
-        return res.length > 1 ? res.filter((f) => f !== 'package.json') : res
-      })
+      const packageJsonFiles = await getPackageJsonPaths(cwd)
 
       if (options.verbose) {
         log.info(`Found ${packageJsonFiles.length} package.json files.`)

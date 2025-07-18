@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { log, note } from '@clack/prompts'
 import { glob } from 'glob'
 import { rm } from 'node:fs/promises'
+import { getCleanDirPatterns } from '../utils/get-clean-dir-patterns'
 
 export function getCommandClean() {
   return new Command('clean')
@@ -13,16 +14,7 @@ export function getCommandClean() {
     .option('-v, --verbose', 'Show verbose output')
     .action(async (options) => {
       const cwd = resolve(options.cwd)
-      const cleanDirPatterns = [
-        // Add more patterns here as needed
-        '.anchor',
-        '.next',
-        '.react-router',
-        'build',
-        'dist',
-        'node_modules',
-        'test-ledger',
-      ]
+      const cleanDirPatterns = getCleanDirPatterns()
       log.info(`Deleting ${cleanDirPatterns.join(', ')} in ${cwd}`)
       const dirs = await glob(`**/{${cleanDirPatterns.join(',')}}`, {
         cwd,
