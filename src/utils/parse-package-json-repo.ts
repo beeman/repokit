@@ -7,7 +7,7 @@ const repoRepokitGroupSchema = z.object({
 })
 
 const repoRepokitSchema = z.object({
-  groups: z.array(repoRepokitGroupSchema),
+  groups: z.array(repoRepokitGroupSchema).optional(),
 })
 
 const repoRepositorySchema = z.object({

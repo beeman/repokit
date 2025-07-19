@@ -10,6 +10,7 @@ import {
   getCommandLint,
   getCommandRun,
 } from './commands'
+import { getCommandConfig } from './commands/get-command-config'
 
 export async function main(argv: string[]) {
   // Get app info from package.json
@@ -23,6 +24,7 @@ export async function main(argv: string[]) {
       .name(app.name)
       .version(app.version, '-V, --version', 'Output the version number')
       .addCommand(getCommandClean())
+      .addCommand(getCommandConfig())
       .addCommand(getCommandGenerate())
       .addCommand(getCommandInit())
       .addCommand(getCommandInstall())
