@@ -11,6 +11,7 @@ import {
   getCommandRun,
 } from './commands'
 import { getCommandConfig } from './commands/get-command-config'
+import { getCommandPublish } from './commands/get-command-publish'
 
 export async function main(argv: string[]) {
   // Get app info from package.json
@@ -30,6 +31,7 @@ export async function main(argv: string[]) {
       .addCommand(getCommandInstall())
       .addCommand(getCommandLint())
       .addCommand(getCommandRun())
+      .addCommand(getCommandPublish())
       .helpOption('-h, --help', 'Display help for command')
       .parseAsync(argv)
     outro('Done!')

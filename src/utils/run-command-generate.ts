@@ -28,6 +28,6 @@ export async function runCommandGenerate({ format, verbose, repo }: RunCommandGe
   // Run automd and format the files with prettier
   execAutoMd({ path, verbose })
   if (format) {
-    execPrettier({ path, verbose })
+    execPrettier({ files: '{README.md,TEMPLATES.md,templates.json}', path, verbose })
   }
 }
