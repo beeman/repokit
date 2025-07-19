@@ -1,5 +1,5 @@
 import { PackageJsonRepo, parsePackageJsonRepo } from './parse-package-json-repo'
-import { ensurePackageJson } from './ensure-package-json'
+import { ensureReadFile } from './ensure-read-file'
 import { z } from 'zod'
 
 /**
@@ -11,7 +11,7 @@ import { z } from 'zod'
  * @throws If the package.json file is not found or if it is not a repokit repo.
  */
 export function ensurePackageJsonRepo(path: string, { verbose = false }: { verbose?: boolean } = {}): PackageJsonRepo {
-  const content = ensurePackageJson(path)
+  const content = ensureReadFile(path, 'package.json')
   const result = parsePackageJsonRepo(content)
   if (result.success) {
     return result.data

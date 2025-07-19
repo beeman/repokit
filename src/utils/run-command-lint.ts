@@ -29,6 +29,7 @@ export async function runCommandLint({ repo, verbose }: RunCommandLintOptions) {
     log.info(`Found ${packageJsonFiles.length} package.json files.`)
   }
   let errorCount = 0
+  const names = new Set<string>()
   for (const file of packageJsonFiles) {
     const filePath = resolve(path, file)
     const content = await readFile(filePath, 'utf8')
@@ -41,6 +42,14 @@ export async function runCommandLint({ repo, verbose }: RunCommandLintOptions) {
         log.error(`  - ${error.path.join('.')} ${error.message}`)
       }
       continue
+    }
+    if (names.has(result.data.name)) {
+      log.error(`Duplicate name ${result.data.name}`)
+      throw new Error(`Duplicate name ${result.data.name} in file://${filePath}`)
+    }
+    names.add(result.data.name)
+    if (verbose) {
+      log.info(`Found ${result.data.name}`)
     }
     if (verbose) {
       log.info(`Successfully linted ${filePath}`)

@@ -1,5 +1,5 @@
 import { PackageJsonTemplate, parsePackageJsonTemplate } from './parse-package-json-template'
-import { ensurePackageJson } from './ensure-package-json'
+import { ensureReadFile } from './ensure-read-file'
 
 /**
  * Reads the package.json file of the given repokit template.
@@ -9,7 +9,7 @@ import { ensurePackageJson } from './ensure-package-json'
  * @throws If the package.json file is not found or if it is not a repokit template.
  */
 export function ensurePackageJsonTemplate(path: string): PackageJsonTemplate {
-  const content = ensurePackageJson(path)
+  const content = ensureReadFile(path, 'package.json')
   const result = parsePackageJsonTemplate(content)
   if (result.success) {
     return result.data
