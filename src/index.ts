@@ -12,6 +12,9 @@ import {
 } from './commands'
 import { getCommandConfig } from './commands/get-command-config'
 
+// Export public API
+export * from './exports'
+
 export async function main(argv: string[]) {
   // Get app info from package.json
   const app = getAppInfo()
