@@ -1,18 +1,18 @@
 import { TemplateJsonGroup, TemplateJsonTemplate } from './parse-template-json'
 
-interface MenuItem {
+export interface MenuItem {
   description: string
   id: string
   name: string
   templates: TemplateJsonTemplate[]
 }
 
-interface MenuConfigItem extends Omit<MenuItem, 'templates'> {
+export interface MenuConfigItem extends Omit<MenuItem, 'templates'> {
   groups: string[]
   keywords: string[]
 }
 
-type MenuConfig = MenuConfigItem[]
+export type MenuConfig = MenuConfigItem[]
 
 export function getMenuItems({ config, groups }: { config: MenuConfig; groups: TemplateJsonGroup[] }): MenuItem[] {
   return config.map((config) => getMenuItem({ config, groups })).filter((structure) => !!structure)
