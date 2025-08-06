@@ -1,6 +1,6 @@
 {
   "name": "@beeman/repokit",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Manage template repositories for create-solana-dapp",
   "repository": {
     "name": "beeman/repokit",
